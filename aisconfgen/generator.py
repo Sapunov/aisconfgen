@@ -27,7 +27,8 @@ class Generator:
         for index_field in self.fields.values():
             index_type = get_type(index_field)
             fields.append(index_type.get_field())
-            facets.append(index_type.get_facet())
+            if index_field.is_facet:
+                facets.append(index_type.get_facet())
 
         return fields, facets
 
