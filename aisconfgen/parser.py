@@ -7,7 +7,7 @@ HEADERS = [
     'Source', 'SourceFieldName', 'FieldDescription',
     'Title', 'Facet', 'Type', 'IndexField']
 
-SKIP_PREFIXES = ['todo:']
+SKIP_PREFIXES = ['todo:', 'skip:']
 
 
 class Parser:
