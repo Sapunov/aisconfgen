@@ -1,7 +1,6 @@
 import os
 
 from .indextypes import get_type
-from .settings import TEMPLATED_DIR
 from aisconfgen import utils
 
 
@@ -53,13 +52,12 @@ class Generator:
 
         fields_string = '\n\n'.join(fields)
         facets_string = '\n\n'.join(facets)
-
         sources_string = '\n\n'.join(
-            self._get_source_mapping_string(source, source_mappings) \
-                for source, source_mappings in mappings.items())
+            self._get_source_mapping_string(source_name, source_mappings) \
+                for source_name, source_mappings in mappings.items())
 
-        output = utils.placeholder_file(
-            os.path.join(TEMPLATED_DIR, 'index.properties'),
+        output = utils.placeholder_template(
+            'index.properties',
             index_fields=fields_string,
             facets=facets_string,
             sources=sources_string)
@@ -69,7 +67,17 @@ class Generator:
 
     def _get_source_mapping_string(self, source_name, source_mapping):
 
+        source_template = f'source_{source_name.lower()}.properties'
+        try:
+            source_default_content = utils.placeholder_template(
+                source_template, source_name=source_name)
+            source_default_content = source_default_content.strip()
+            source_default_content += '\n#\n'
+        except FileNotFoundError:
+            source_default_content = ''
+
         output = f'# {source_name}\n#\n'
+        output += source_default_content
         output += '\n'.join(source_mapping)
 
         return output
