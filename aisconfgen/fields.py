@@ -5,13 +5,19 @@ class SourceField:
 
     def __init__(
             self, source, source_field_name, field_description,
-            is_title, is_facet, field_type, index_field):
+            is_title, is_facet, field_nature, field_type, index_field):
+
+        field_nature = field_nature.lower()
 
         self.source = str_or_none(source)
         self.source_field_name = str_or_none(source_field_name)
         self.field_description = str_or_none(field_description)
         self.is_title = True if is_title != '' else False
         self.is_facet = True if is_facet != '' else False
+
+        self.is_onto = field_nature == 'onto'
+        self.is_sys = field_nature == 'sys'
+        
         self.field_type = str_or_none(field_type)
         self.index_field = str_or_none(index_field)
 
@@ -30,7 +36,7 @@ class SourceField:
 
 class IndexField:
 
-    def __init__(self, index_field, field_type, is_facet):
+    def __init__(self, index_field, field_type, is_facet, is_onto, is_sys):
 
         self.index_field = index_field
 
@@ -42,17 +48,26 @@ class IndexField:
             self.is_array = False
 
         self.is_facet = is_facet
+        self.is_onto = is_onto
+        self.is_sys = is_sys
         self.source_fields = []
 
         self._added = set()
 
     def add_source_field(self, source_field):
 
-        self._ensure_right_type(source_field)
-        self._ensure_not_duplicate(source_field)
-        self._ensure_facet(source_field)
+        if not source_field.is_sys:
+            self._ensure_right_type(source_field)
+            self._ensure_not_duplicate(source_field)
+            self._ensure_facet(source_field)
+            self._ensure_first_onto(source_field)
 
-        self.source_fields.append(source_field)
+            self.source_fields.append(source_field)
+
+    def _ensure_first_onto(self, source_field):
+        
+        if source_field.is_onto:
+            assert len(self.source_fields) == 0, 'Only one source field allowed in onto fields'
 
     def _ensure_right_type(self, source_field):
 

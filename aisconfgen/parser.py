@@ -5,7 +5,7 @@ from .fields import SourceField, IndexField
 
 HEADERS = [
     'Source', 'SourceFieldName', 'FieldDescription',
-    'Title', 'Facet', 'Type', 'IndexField']
+    'Title', 'Facet', 'Nature', 'Type', 'IndexField']
 
 SKIP_PREFIXES = ['todo:', 'skip:']
 
@@ -40,7 +40,9 @@ class Parser:
                     self.fields[source_field.index_field] = IndexField(
                         source_field.index_field,
                         source_field.field_type,
-                        source_field.is_facet)
+                        source_field.is_facet,
+                        source_field.is_onto,
+                        source_field.is_sys)
 
                 self.fields[source_field.index_field].add_source_field(source_field)
 

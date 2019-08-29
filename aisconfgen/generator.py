@@ -26,7 +26,8 @@ class Generator:
 
         for index_field in self.fields.values():
             index_type = get_type(index_field)
-            fields.append(index_type.get_field())
+            if not index_field.is_sys:
+                fields.append(index_type.get_field())
             if index_field.is_facet:
                 facets.append(index_type.get_facet())
 
@@ -38,6 +39,8 @@ class Generator:
 
         for index_field in self.fields.values():
             for source_field in index_field.source_fields:
+                if source_field.is_onto or source_field.is_sys:
+                    continue
                 line = self.mapping_template.format(
                     source=source_field.source,
                     source_field=source_field.source_field_name,
